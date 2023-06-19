@@ -47,9 +47,17 @@ class _MyHomePageState extends State<MyHomePage> {
     if (Platform.isAndroid) {
       AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
 
-      await supabase
-          .from("androidDevices")
-          .insert({'brand': deviceInfo.brand, 'model': deviceInfo.model});
+      await supabase.from("androidDevices").insert({
+        'brand': deviceInfo.brand,
+        'device': deviceInfo.device,
+        'display': deviceInfo.display,
+
+        'host': deviceInfo.host,
+        'manufacturer': deviceInfo.manufacturer,
+        'model': deviceInfo.model,
+        'product': deviceInfo.product,
+        'systemFeatures': deviceInfo.systemFeatures
+      });
     }
 
     if (Platform.isWindows) {
