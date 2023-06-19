@@ -55,9 +55,32 @@ class _MyHomePageState extends State<MyHomePage> {
     if (Platform.isWindows) {
       WindowsDeviceInfo deviceInfo = await deviceInfoPlugin.windowsInfo;
 
-      await supabase
-          .from("windowsDevices")
-          .insert({'computerName': deviceInfo.computerName, 'majorVersion': deviceInfo.majorVersion});
+      await supabase.from("windowsDevices").insert({
+        'computerName': deviceInfo.computerName,
+        'numberOfCores': deviceInfo.numberOfCores,
+        'systemMemoryInMegabytes': deviceInfo.systemMemoryInMegabytes,
+        'userName': deviceInfo.userName,
+        'majorVersion': deviceInfo.majorVersion,
+        'minorVersion': deviceInfo.minorVersion,
+        'buildNumber': deviceInfo.buildNumber,
+        'platformId': deviceInfo.platformId,
+        'csdVersion': deviceInfo.csdVersion,
+        'servicePackMajor': deviceInfo.servicePackMajor,
+        'servicePackMinor': deviceInfo.servicePackMinor,
+        'suitMask': deviceInfo.suitMask,
+        'productType': deviceInfo.productType,
+        'buildLab': deviceInfo.buildLab,
+        'buildLabEx': deviceInfo.buildLabEx,
+        'digitalProductId': deviceInfo.digitalProductId,
+        'displayVersion': deviceInfo.displayVersion,
+        'editionId': deviceInfo.editionId,
+        'installDate': deviceInfo.installDate.toIso8601String(),
+        'productId': deviceInfo.productId,
+        'productName': deviceInfo.productName,
+        'registeredOwner': deviceInfo.registeredOwner,
+        'releaseId': deviceInfo.releaseId,
+        'deviceId': deviceInfo.deviceId
+      });
     }
   }
 
