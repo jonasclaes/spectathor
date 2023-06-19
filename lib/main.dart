@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -41,11 +43,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _postSystemSpecs() async {
     final supabase = Supabase.instance.client;
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
 
-    await supabase
-        .from("devices")
-        .insert({'brand': deviceInfo.brand, 'model': deviceInfo.model});
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
+
+      await supabase
+          .from("androidDevices")
+          .insert({'brand': deviceInfo.brand, 'model': deviceInfo.model});
+    }
+
+    if (Platform.isWindows) {
+      WindowsDeviceInfo deviceInfo = await deviceInfoPlugin.windowsInfo;
+
+      await supabase
+          .from("windowsDevices")
+          .insert({'computerName': deviceInfo.computerName, 'majorVersion': deviceInfo.majorVersion});
+    }
   }
 
   @override
