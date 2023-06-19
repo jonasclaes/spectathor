@@ -48,15 +48,28 @@ class _MyHomePageState extends State<MyHomePage> {
       AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
 
       await supabase.from("androidDevices").insert({
+        'version': deviceInfo.version.toMap(),
+        'board': deviceInfo.board,
+        'bootloader': deviceInfo.bootloader,
         'brand': deviceInfo.brand,
         'device': deviceInfo.device,
         'display': deviceInfo.display,
-
+        'fingerprint': deviceInfo.fingerprint,
+        'hardware': deviceInfo.hardware,
         'host': deviceInfo.host,
+        'identifier': deviceInfo.id,
         'manufacturer': deviceInfo.manufacturer,
         'model': deviceInfo.model,
         'product': deviceInfo.product,
-        'systemFeatures': deviceInfo.systemFeatures
+        'supported32BitAbis': deviceInfo.supported32BitAbis,
+        'supported64BitAbis': deviceInfo.supported64BitAbis,
+        'supportedAbis': deviceInfo.supportedAbis,
+        'tags': deviceInfo.tags,
+        'type': deviceInfo.type,
+        'isPhysicalDevice': deviceInfo.isPhysicalDevice,
+        'systemFeatures': deviceInfo.systemFeatures,
+        'displayMetrics': deviceInfo.displayMetrics.toMap(),
+        'serialNumber': deviceInfo.serialNumber
       });
     }
 
