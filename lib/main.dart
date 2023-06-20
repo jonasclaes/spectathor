@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -19,27 +20,76 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Spectathor',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+        create: (_) => AuthModel(),
+        child: MaterialApp(
+            title: 'Spectathor',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+              useMaterial3: true,
+            ),
+            home: Consumer<AuthModel>(
+              builder: (_, auth, __) => auth.isSignedIn
+                  ? const HomePage(title: 'Spectathor')
+                  : const LoginPage(),
+            )));
+  }
+}
+
+class AuthModel extends ChangeNotifier {
+  final supabase = Supabase.instance.client;
+
+  bool get isSignedIn => supabase.auth.currentUser != null;
+
+  Future<void> signIn({required String email, required String password}) async {
+    await supabase.auth.signInWithPassword(email: email, password: password);
+    notifyListeners();
+  }
+
+  Future<void> signOut() async {
+    await supabase.auth.signOut();
+    notifyListeners();
+  }
+}
+
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Login'),
       ),
-      home: const MyHomePage(title: 'Spectathor'),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+                onPressed: () async {
+                  final model = context.read<AuthModel>();
+                  await model.signIn(
+                      email: 'jonas@jonasclaes.be', password: 'admin123');
+                },
+                child: const Text("Login now"))
+          ],
+        ),
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   Future<void> _postSystemSpecs() async {
     final supabase = Supabase.instance.client;
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -117,7 +167,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-                onPressed: _postSystemSpecs, child: const Text("Send data now"))
+                onPressed: _postSystemSpecs,
+                child: const Text("Send data now")),
+            ElevatedButton(
+                onPressed: () async {
+                  final model = context.read<AuthModel>();
+                  await model.signOut();
+                },
+                child: const Text("Log out"))
           ],
         ),
       ),
