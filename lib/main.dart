@@ -103,8 +103,8 @@ class _HomePageState extends State<HomePage> {
       List<Map<String, dynamic>> apps = [];
       var packageNames = await _applicationsInfo.getInstalledPackages();
 
-      packageNames?.forEach((element) {
-        apps.add({'name': element});
+      packageNames?.forEach((package) {
+        apps.add({'packageName': package.packageName, 'name': package.name});
       });
 
       await supabase.from("androidDevices").insert({

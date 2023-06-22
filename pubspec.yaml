@@ -38,7 +38,7 @@ dependencies:
   device_info_plus: ^9.0.2
   supabase_flutter: ^1.10.4
   provider: ^6.0.5
-  applications_info: ^0.0.1
+  applications_info: ^0.1.0
 
 dev_dependencies:
   flutter_test:
