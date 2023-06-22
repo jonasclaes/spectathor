@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:applications_info/applications_info.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -90,12 +91,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final supabase = Supabase.instance.client;
+  final _applicationsInfo = ApplicationsInfo();
+
   Future<void> _postSystemSpecs() async {
-    final supabase = Supabase.instance.client;
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
     if (Platform.isAndroid) {
       AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
+
+      List<Map<String, dynamic>> apps = [];
+      var packageNames = await _applicationsInfo.getInstalledPackages();
+
+      packageNames?.forEach((element) {
+        apps.add({'name': element});
+      });
 
       await supabase.from("androidDevices").insert({
         'version': deviceInfo.version.toMap(),
@@ -119,7 +129,8 @@ class _HomePageState extends State<HomePage> {
         'isPhysicalDevice': deviceInfo.isPhysicalDevice,
         'systemFeatures': deviceInfo.systemFeatures,
         'displayMetrics': deviceInfo.displayMetrics.toMap(),
-        'serialNumber': deviceInfo.serialNumber
+        'serialNumber': deviceInfo.serialNumber,
+        'apps': apps
       });
     }
 
@@ -166,6 +177,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text("Hi, ${supabase.auth.currentUser?.email}!"),
             ElevatedButton(
                 onPressed: _postSystemSpecs,
                 child: const Text("Send data now")),
